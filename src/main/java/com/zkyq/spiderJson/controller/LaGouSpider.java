@@ -256,7 +256,7 @@ public class LaGouSpider implements PageProcessor  {
     {
         return site;
     }
-
+    //https://www.lagou.com/jobs/companyAjax.json?city=%E8%83%8C%E6%99%AF&needAddtionalResult=false
     public static void main(String[] args)
     {
         Spider.create(new LaGouSpider())

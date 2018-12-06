@@ -1,5 +1,6 @@
-package com.zkyq.spiderJson.controller;
+package com.zkyq.spiderJson.processor;
 
+import com.zkyq.spiderJson.pipeline.LagouPipe;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Site;

@@ -1,4 +1,4 @@
-package com.zkyq.spiderJson.controller;
+package com.zkyq.spiderJson.pipeline;
 
 import com.zkyq.spiderJson.dao.LagouRepository;
 import com.zkyq.spiderJson.modle.Lagou;

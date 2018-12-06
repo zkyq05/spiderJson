@@ -1,10 +1,11 @@
-package com.zkyq.spiderJson.controller;
+package com.zkyq.spiderJson.processor;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zkyq.spiderJson.bean.ZhilianBean;
+import com.zkyq.spiderJson.pipeline.NewPipeline;
 import com.zkyq.spiderJson.dao.ZhilianRepository;
-import com.zkyq.spiderJson.modle.Zhilian;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
@@ -13,15 +14,14 @@ import us.codecraft.webmagic.processor.PageProcessor;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
+@Repository
 public class NewSpider implements PageProcessor {
     @Autowired
-    ZhilianRepository zhilianRepository;
+    public ZhilianRepository zhilianRepository;
     int flag = 0;
     private Site site = Site.me()
-            .setRetryTimes(3)
+            .setRetryTimes(1)
             .setSleepTime(1000)
             .addHeader("Accept","application/json, text/plain, */*")
             .addHeader("Accept-Encoding","gzip, deflate, br")
@@ -42,48 +42,34 @@ public class NewSpider implements PageProcessor {
 
     @Override
     public void process(Page page) {
-        int num=100;
-        String res=processBeiJing(0);
-        String reslt=res.replaceFirst("null","");
-        ZhilianBean zhilianBean =JSONObject.parseObject(reslt,ZhilianBean.class);
-        num=zhilianBean.getData().getNumFound()/100;
-        System.err.println("num:"+num);
-        reslt="";
-        for (int j = 0; j < num; j++) {
-            System.err.println("page:"+j*100);
-            res=processBeiJing(100);
-            reslt=res.replaceFirst("null","");
-            System.err.println("result:"+reslt);
-            zhilianBean =JSONObject.parseObject(reslt,ZhilianBean.class);
+        for (int i = 0; i <7 ; i++) {
+            int num=i*100;
+            System.err.println("num:"+num);
+            String res=processBeiJing(num);
+            String reslt=res.replaceFirst("null","");
+//        System.err.println("result:"+reslt);
+            ZhilianBean zhilianBean =JSONObject.parseObject(reslt,ZhilianBean.class);
 
-            for (int i = 0; i <zhilianBean.getData().getResults().size() ; i++) {
-                String companyName=zhilianBean.getData().getResults().get(i).getCompany().getName();
-                String jobName=zhilianBean.getData().getResults().get(i).getJobName();
-                String salary=zhilianBean.getData().getResults().get(i).getSalary();
-                Zhilian res1=zhilianRepository.findByCompanyNameAndJobNameAndSalary(companyName,jobName,salary);
-                if (res1==null){
-                    SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            page.putField("zhilian"+i,zhilianBean);
 
-                    Zhilian zhilian=new Zhilian();
-                    zhilian.setCityName(zhilianBean.getData().getResults().get(i).getCity().getDisplay());
-                    zhilian.setCompanyName(zhilianBean.getData().getResults().get(i).getCompany().getName());
-                    zhilian.setJobName(zhilianBean.getData().getResults().get(i).getJobName());
-                    zhilian.setSalary(zhilianBean.getData().getResults().get(i).getSalary());
-                    zhilian.setEmplType(zhilianBean.getData().getResults().get(i).getEmplType());
-
-                    zhilian.setCreateDate(zhilianBean.getData().getResults().get(i).getCreateDate());
-                    zhilian.setGetTime(df.format(new Date()));
-                    zhilian.setPositionURL(zhilianBean.getData().getResults().get(i).getPositionURL());
-                    zhilian.setCompanyURL(zhilianBean.getData().getResults().get(i).getCompany().getUrl());
-
-                    zhilianRepository.save(zhilian);
-                    System.err.println("CompanyName:"+zhilian.getCompanyName());
-                }else {
-                    System.err.println("已经有此数据");
-                }
+            String listM = zhilianBean.getData().getResults().get(0).getPositionURL();
+            if (page.getUrl().regex(listM).match()) {
+            System.err.println("page.getHtml():"+page.getHtml().xpath("//div[@class='pos-ul']"));
+//                List<Selectable> list=page.getHtml().xpath("//ul[@class='note-list']/li").nodes();
+//            System.err.println("list:"+list);
+//                for (Selectable s : list) {
+//                    String title=s.xpath("//div/a/text()").toString();
+//                    String link=s.xpath("//div/a").links().toString();
+//                    String info=s.xpath("//div/p/text()").toString();
+//                    String author=s.xpath("//div/div/a/text()").toString();
+//                    System.err.println("title:"+title);
+//                    System.err.println("link:"+link);
+//                    System.err.println("info:"+info);
+//                    System.err.println("author:"+author);
+//                }
             }
         }
-//        page.putField("zhilian",zhilian);
+
     }
     //爬取北京的java职位信息
     public String processBeiJing(int page)
@@ -171,7 +157,7 @@ public class NewSpider implements PageProcessor {
         Spider.create(new NewSpider())
                 .addPipeline(new NewPipeline())
 //                .addUrl("https://www.lagou.com/jobs/positionAjax.json?px=default&city=北京&needAddtionalResult=false&isSchoolJob=0")
-                .thread(2)
+                .thread(1)
                 .run();
         System.err.println("爬取完成");
     }

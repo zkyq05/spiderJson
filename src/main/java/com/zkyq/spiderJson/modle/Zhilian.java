@@ -1,8 +1,11 @@
 package com.zkyq.spiderJson.modle;
 
+import org.hibernate.validator.constraints.UniqueElements;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.UniqueConstraint;
 
 @Entity
 public class Zhilian {
@@ -16,6 +19,7 @@ public class Zhilian {
     private String emplType;
     private String createDate;
     private String getTime;
+    @GeneratedValue
     private String positionURL;
     private String companyURL;
 

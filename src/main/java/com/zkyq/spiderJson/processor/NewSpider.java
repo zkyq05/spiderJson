@@ -83,7 +83,7 @@ public class NewSpider implements PageProcessor {
                      in = new BufferedReader(new InputStreamReader(
                                      connection.getInputStream(),"utf-8"));
                      // 用来临时存储抓取到的每一行的数据
-                     String line,saveEssayUrl="F:\\spider",fileName="myFile";
+                     String line,saveEssayUrl="F:\\spider",fileName="myFile.txt";
 
                      File file = new File(saveEssayUrl, fileName);
                      File file2 = new File(saveEssayUrl);

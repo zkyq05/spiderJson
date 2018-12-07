@@ -60,7 +60,7 @@ public class LagouScheduled {
     public void DetailScheduled() {
         res=zhilianRepository.findAll();
 
-        for (int i = 6000; i < 7000; i++) {
+        for (int i = 0; i < res.size(); i++) {
             if (res.get(i).getDetail_position()==null){
                 SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 url=res.get(i).getPositionURL();
@@ -75,5 +75,16 @@ public class LagouScheduled {
             }
         }
     }
-
+    @Scheduled(cron = "30 50 16 * * ?")//0 */1 * * * ?
+    public void TaobaoScheduled() {
+        SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println("----开始执行Taobao定时任务----:"+df.format(new Date()));
+        Spider spider = Spider.create(new NewSpider());
+        spider.addUrl("https://uland.taobao.com/sem/tbsearch?refpid=mm_26632258_3504122_32538762&keyword=%E5%A5%B3%E8%A3%85&clk1=af65d95df988bab0411e0b45a9725955&upsid=af65d95df988bab0411e0b45a9725955");
+        spider.addPipeline(newPipeline);
+        spider.thread(1);
+        spider.setExitWhenComplete(true);
+        spider.start();
+        spider.stop();
+    }
 }

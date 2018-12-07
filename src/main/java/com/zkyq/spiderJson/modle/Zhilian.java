@@ -22,6 +22,33 @@ public class Zhilian {
     @GeneratedValue
     private String positionURL;
     private String companyURL;
+    private String detail_position;
+    private String detail_company;
+    private String detail_salary;
+
+    public String getDetail_position() {
+        return detail_position;
+    }
+
+    public void setDetail_position(String detail_position) {
+        this.detail_position = detail_position;
+    }
+
+    public String getDetail_company() {
+        return detail_company;
+    }
+
+    public void setDetail_company(String detail_company) {
+        this.detail_company = detail_company;
+    }
+
+    public String getDetail_salary() {
+        return detail_salary;
+    }
+
+    public void setDetail_salary(String detail_salary) {
+        this.detail_salary = detail_salary;
+    }
 
     public long getId() {
         return id;

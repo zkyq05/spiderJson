@@ -42,39 +42,30 @@ public class NewSpider implements PageProcessor {
 
     @Override
     public void process(Page page) {
-        for (int i = 0; i <7 ; i++) {
+        int size=100;
+        for (int i = 0; i <size ; i++) {
             int num=i*100;
             System.err.println("num:"+num);
             String res=processBeiJing(num);
             String reslt=res.replaceFirst("null","");
 //        System.err.println("result:"+reslt);
-            ZhilianBean zhilianBean =JSONObject.parseObject(reslt,ZhilianBean.class);
+            ZhilianBean zhilianBean = null;
+            try {
+                zhilianBean = JSONObject.parseObject(reslt,ZhilianBean.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            size=zhilianBean.getData().getNumFound()/100;
 
             page.putField("zhilian"+i,zhilianBean);
 
-            String listM = zhilianBean.getData().getResults().get(0).getPositionURL();
-            if (page.getUrl().regex(listM).match()) {
-            System.err.println("page.getHtml():"+page.getHtml().xpath("//div[@class='pos-ul']"));
-//                List<Selectable> list=page.getHtml().xpath("//ul[@class='note-list']/li").nodes();
-//            System.err.println("list:"+list);
-//                for (Selectable s : list) {
-//                    String title=s.xpath("//div/a/text()").toString();
-//                    String link=s.xpath("//div/a").links().toString();
-//                    String info=s.xpath("//div/p/text()").toString();
-//                    String author=s.xpath("//div/div/a/text()").toString();
-//                    System.err.println("title:"+title);
-//                    System.err.println("link:"+link);
-//                    System.err.println("info:"+info);
-//                    System.err.println("author:"+author);
-//                }
-            }
         }
 
     }
     //爬取北京的java职位信息
     public String processBeiJing(int page)
     {
-        String url="https://fe-api.zhaopin.com/c/i/sou?start="+page+"&pageSize=100&cityId=%e7%9f%b3%e5%ae%b6%e5%ba%84&workExperience=-1&education=-1&companyType=-1&employmentType=-1&jobWelfareTag=-1&kw=Java%e5%bc%80%e5%8f%91&kt=3&=15001&at=be409702c01649b1b83acdd2509a1369&rt=3a6e92f8188d42d680372c783352441b&_v=0.01035474&userCode=655156486&x-zp-page-request-id=88f0ca643bcd48f0b235a9d4ba20810d-1543900478483-202141";
+        String url="https://fe-api.zhaopin.com/c/i/sou?start="+page+"&pageSize=100&cityId=%e5%8c%97%e4%ba%ac&workExperience=-1&education=-1&companyType=-1&employmentType=-1&jobWelfareTag=-1&kw=Java%e5%bc%80%e5%8f%91&kt=3&=15001&at=be409702c01649b1b83acdd2509a1369&rt=3a6e92f8188d42d680372c783352441b&_v=0.01035474&userCode=655156486&x-zp-page-request-id=88f0ca643bcd48f0b235a9d4ba20810d-1543900478483-202141";
         System.err.println("ulr:"+url);
         Writer write = null;
               // 定义一个字符串用来存储网页内容

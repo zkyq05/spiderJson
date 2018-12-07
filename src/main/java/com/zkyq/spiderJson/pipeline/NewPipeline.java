@@ -20,12 +20,14 @@ public class NewPipeline implements Pipeline {
     ZhilianRepository zhilianRepository;
     @Override
     public void process(ResultItems resultItems, Task task) {
-        for (int j = 0; j < 7; j++) {
+        int size=100;
+        for (int j = 0; j < size; j++) {
             System.err.println(resultItems.get("zhilian"+j).toString());
             ZhilianBean zhilianBean = resultItems.get("zhilian"+j);
+            size=zhilianBean.getData().getNumFound()/100;
             for (int i = 0; i <zhilianBean.getData().getResults().size() ; i++) {
                 String positionURL=zhilianBean.getData().getResults().get(i).getPositionURL();
-                System.err.println(i+"---"+"positionURL:"+positionURL);
+                System.err.println(j+":"+i+"---"+"positionURL:"+positionURL);
                 List<Zhilian> res= null;
                 try {
                     res = zhilianRepository.findByPositionURL(positionURL);

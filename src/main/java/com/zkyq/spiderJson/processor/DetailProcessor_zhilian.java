@@ -1,6 +1,11 @@
 package com.zkyq.spiderJson.processor;
 
+import com.zkyq.spiderJson.controller.LagouScheduled;
+import com.zkyq.spiderJson.dao.ZhilianRepository;
+import com.zkyq.spiderJson.modle.Zhilian;
 import com.zkyq.spiderJson.pipeline.DetailPipeline_zhilian;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
@@ -9,8 +14,10 @@ import us.codecraft.webmagic.selector.Selectable;
 
 import javax.annotation.processing.Processor;
 import java.util.List;
-
+@Repository
 public class DetailProcessor_zhilian implements PageProcessor {
+    @Autowired
+    public  static ZhilianRepository zhilianRepository;
     private Site site = Site.me()
             .setCharset("utf-8")
             .setDomain("jobs.zhaopin.com")
@@ -20,22 +27,16 @@ public class DetailProcessor_zhilian implements PageProcessor {
     public static final String list = "https://jobs.zhaopin.com/CZ893714810J00093796212.htm";
     @Override
     public void process(Page page) {
-        System.err.println("list:"+list);
         System.err.println("page.getUrl():"+page.getUrl());
 //        if (page.getUrl().regex(list).match()) {
             System.err.println("page.getHtml():"+page.getHtml().xpath("//div[@class='pos-ul']"));
-//            List<Selectable> list=page.getHtml().xpath("//ul[@class='note-list']/li").nodes();
-////            System.err.println("list:"+list);
-//            for (Selectable s : list) {
-//                String title=s.xpath("//div/a/text()").toString();
-//                String link=s.xpath("//div/a").links().toString();
-//                String info=s.xpath("//div/p/text()").toString();
-//                String author=s.xpath("//div/div/a/text()").toString();
-//                System.err.println("title:"+title);
-//                System.err.println("link:"+link);
-//                System.err.println("info:"+info);
-//                System.err.println("author:"+author);
-//            }
+            System.err.println("page.getHtml():"+page.getHtml().xpath("//div[@class='jjtxt']"));//l info-money
+            System.err.println("page.getHtml():"+page.getHtml().xpath("//div[@class='l info-money']/strong"));//
+
+            page.putField("url",page.getUrl());
+            page.putField("pos",page.getHtml().xpath("//div[@class='pos-ul']"));
+            page.putField("com",page.getHtml().xpath("//div[@class='jjtxt']"));
+            page.putField("sar",page.getHtml().xpath("//div[@class='l info-money']/strong"));
 //        }
     }
     @Override
@@ -43,12 +44,16 @@ public class DetailProcessor_zhilian implements PageProcessor {
         return site;
     }
     public static void main(String[] args) {
-
-        Spider spider=Spider.create(new DetailProcessor_zhilian());
-        spider.addUrl("https://jobs.zhaopin.com/CZ893714810J00093796212.htm");
-        spider.addPipeline(new DetailPipeline_zhilian());
-        spider.thread(5);
-        spider.setExitWhenComplete(true);
-        spider.start();
+//        List<Zhilian> res=LagouScheduled.res;
+//
+//        for (int i = 0; i < res.size(); i++) {
+//            String url=res.get(i).getPositionURL();
+//            Spider spider=Spider.create(new DetailProcessor_zhilian());
+//            spider.addUrl(url);
+//            spider.addPipeline(new DetailPipeline_zhilian());
+//            spider.thread(1);
+//            spider.setExitWhenComplete(true);
+//            spider.start();
+//        }
     }
 }

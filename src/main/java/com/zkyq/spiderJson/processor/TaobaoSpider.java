@@ -1,9 +1,11 @@
 package com.zkyq.spiderJson.processor;
 
 import com.alibaba.fastjson.JSONObject;
+import com.zkyq.spiderJson.bean.TGirlBean;
 import com.zkyq.spiderJson.bean.ZhilianBean;
 import com.zkyq.spiderJson.dao.ZhilianRepository;
 import com.zkyq.spiderJson.pipeline.NewPipeline;
+import com.zkyq.spiderJson.pipeline.TaobaoPipeline;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import us.codecraft.webmagic.Page;
@@ -30,84 +32,26 @@ public class TaobaoSpider implements PageProcessor {
 
     @Override
     public void process(Page page) {
-        System.err.println("page.getUrl():"+page.getUrl());
+//        System.err.println("page.getUrl():"+page.getUrl());
+//        System.err.println("page.getHtml():"+page.getHtml());
+        String str=page.getHtml().toString();
+        String[] arr1=str.split("\"itemlist\":");
+        String[] arr2=arr1[1].split(",\"bottomsearch\"");
+//        String[] arr1=str.split("g_page_config");
+//        String[] arr2=arr1[1].split("g_srp_loadCss()");
+//        String[] arr3=arr2[0].split("= ");
+//        String[] arr4=arr3[1].split("}};");
+        System.err.println("g_page_config:"+arr2[0]);
 
-    }
-    //爬取北京的java职位信息
-    public String processBeiJing(int page)
-    {
-        String url="https://h5api.m.taobao.com/h5/mtop.alimama.union.sem.landing.pc.items/1.0/?jsv=2.4.0&appKey=12574478&t=1544149500723&sign=9dd5cf5754389c8ef3ab2f5060ec8bba&api=mtop.alimama.union.sem.landing.pc.items&v=1.0&AntiCreep=true&dataType=jsonp&type=jsonp&ecode=0&callback=mtopjsonp1&data=%7B%22keyword%22%3A%22%E5%A5%B3%E8%A3%85%22%2C%22ppath%22%3A%22%22%2C%22loc%22%3A%22%22%2C%22minPrice%22%3A%22%22%2C%22maxPrice%22%3A%22%22%2C%22ismall%22%3A%22%22%2C%22ship%22%3A%22%22%2C%22itemAssurance%22%3A%22%22%2C%22exchange7%22%3A%22%22%2C%22custAssurance%22%3A%22%22%2C%22b%22%3A%22%22%2C%22clk1%22%3A%22af65d95df988bab0411e0b45a9725955%22%2C%22pvoff%22%3A%22%22%2C%22pageSize%22%3A%22100%22%2C%22page%22%3A%22%22%2C%22elemtid%22%3A%221%22%2C%22refpid%22%3A%22mm_26632258_3504122_32538762%22%2C%22pid%22%3A%22430673_1006%22%2C%22featureNames%22%3A%22spGoldMedal%2CdsrDescribe%2CdsrDescribeGap%2CdsrService%2CdsrServiceGap%2CdsrDeliver%2C%20dsrDeliverGap%22%2C%22ac%22%3A%22%2BemEFOrU8A8CATwBAd0gZduP%22%2C%22wangwangid%22%3A%22%22%2C%22catId%22%3A%22%22%7D";
-        System.err.println("ulr:"+url);
-        Writer write = null;
-              // 定义一个字符串用来存储网页内容
-             String result = null;
-               // 定义一个缓冲字符输入流
-                BufferedReader in = null;
-                 try {
-                     // 将string转成url对象
-                    URL realUrl = new URL(url);
-                    // 初始化一个链接到那个url的连接
-                    URLConnection connection = realUrl.openConnection();
-                    // 开始实际的连接
-                    connection.connect();
-                     // 初始化 BufferedReader输入流来读取URL的响应
-                     in = new BufferedReader(new InputStreamReader(
-                                     connection.getInputStream(),"utf-8"));
-                     // 用来临时存储抓取到的每一行的数据
-                     String line,saveEssayUrl="F:\\spider",fileName="myFile.txt";
+        TGirlBean tGirlBean = null;
+        String result=arr2[0];
+        try {
+            tGirlBean = JSONObject.parseObject(result,TGirlBean.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        page.putField("TGirls",tGirlBean);
 
-                     File file = new File(saveEssayUrl, fileName);
-                     File file2 = new File(saveEssayUrl);
-
-                     if (file2.isDirectory() == false) {
-                            file2.mkdirs();
-                             try {
-                                     file.createNewFile();
-                                     System.out.println("********************");
-                                     System.out.println("创建" + fileName + "文件成功！！");
-
-                                 } catch (IOException e) {
-                                     e.printStackTrace();
-                                 }
-
-                        } else {
-                             try {
-                                     file.createNewFile();
-                                     System.out.println("********************");
-                                     System.out.println("创建" + fileName + "文件成功！！");
-                                 } catch (IOException e) {
-                                     e.printStackTrace();
-                                }
-                         }
-                     Writer w = new FileWriter(file);
-
-                     while ((line = in.readLine()) != null) {
-                            // 遍历抓取到的每一行并将其存储到result里面
-            //                line = new String(line.getBytes("utf-8"),"gbk");
-                         if (line!=null){
-                             w.write(line);
-                             w.write("\r\n");
-                             result += line;
-                         }
-                         }
-                     w.close();
-                 } catch (Exception e) {
-                     System.out.println("发送GET请求出现异常！" + e);
-                     e.printStackTrace();
-                 }
-                 // 使用finally来关闭输入流
-                finally {
-                     try {
-                             if (in != null) {
-                                     in.close();
-                                 }
-
-                         } catch (Exception e2) {
-                             e2.printStackTrace();
-                         }
-                 }
-//                 System.err.println(result);
-                 return result;
     }
     @Override
     public Site getSite() {
@@ -117,8 +61,8 @@ public class TaobaoSpider implements PageProcessor {
     public static void main(String[] args)
     {
         Spider.create(new TaobaoSpider())
-                .addPipeline(new NewPipeline())
-                .addUrl("https://s.taobao.com/list?q=%E5%A5%B3%E8%A3%85&cat=16&style=grid&seller_type=taobao&spm=a217f.8051907.1000187.1")
+                .addPipeline(new TaobaoPipeline())
+                .addUrl("https://s.taobao.com/search?q=%E5%A5%B3%E8%A3%85&imgfile=&commend=all&ssid=s5-e&search_type=item&sourceId=tb.index&spm=a21bo.2017.201856-taobao-item.1&ie=utf8&initiative_id=tbindexz_20170306")
                 .thread(1)
                 .setExitWhenComplete(true)
                 .start();

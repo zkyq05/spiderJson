@@ -6,8 +6,10 @@ import com.zkyq.spiderJson.modle.Zhilian;
 import com.zkyq.spiderJson.pipeline.DetailPipeline_zhilian;
 import com.zkyq.spiderJson.pipeline.LagouPipe;
 import com.zkyq.spiderJson.pipeline.NewPipeline;
+import com.zkyq.spiderJson.pipeline.TaobaoPipeline;
 import com.zkyq.spiderJson.processor.DetailProcessor_zhilian;
 import com.zkyq.spiderJson.processor.NewSpider;
+import com.zkyq.spiderJson.processor.TaobaoSpider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,8 @@ public class LagouScheduled {
     private LagouPipe lagouPipe;
     @Autowired
     private NewPipeline newPipeline;
+    @Autowired
+    private TaobaoPipeline taobaoPipeline;
     @Autowired
     private DetailPipeline_zhilian detailPipeline_zhilian;
     @Autowired
@@ -75,13 +79,13 @@ public class LagouScheduled {
             }
         }
     }
-    @Scheduled(cron = "30 50 16 * * ?")//0 */1 * * * ?
+    @Scheduled(cron = "30 39 16 * * ?")//0 */1 * * * ?
     public void TaobaoScheduled() {
         SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         System.out.println("----开始执行Taobao定时任务----:"+df.format(new Date()));
-        Spider spider = Spider.create(new NewSpider());
-        spider.addUrl("https://uland.taobao.com/sem/tbsearch?refpid=mm_26632258_3504122_32538762&keyword=%E5%A5%B3%E8%A3%85&clk1=af65d95df988bab0411e0b45a9725955&upsid=af65d95df988bab0411e0b45a9725955");
-        spider.addPipeline(newPipeline);
+        Spider spider = Spider.create(new TaobaoSpider());
+        spider.addUrl("https://s.taobao.com/search?q=%E5%A5%B3%E8%A3%85&imgfile=&commend=all&ssid=s5-e&search_type=item&sourceId=tb.index&spm=a21bo.2017.201856-taobao-item.1&ie=utf8&initiative_id=tbindexz_20170306");
+        spider.addPipeline(taobaoPipeline);
         spider.thread(1);
         spider.setExitWhenComplete(true);
         spider.start();
